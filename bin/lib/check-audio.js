@@ -12,7 +12,6 @@ module.exports = function(UUID){
 
 			if (err && err.code === 'NotFound') {
 				resolve(false);
-
 			} else if(err){
 				reject(err);
 			} else if(!err) {
