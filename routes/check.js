@@ -5,6 +5,7 @@ const router = express.Router();
 const checkAudio = require('../bin/lib/check-audio');
 const checkUUID = require('../bin/lib/check-uuid');
 const uuidCache = require('../bin/lib/uuid-cache');
+const generateS3URL = require('../bin/lib/get-s3-public-url');
 
 router.get('/:UUID', function(req, res){
 
@@ -20,7 +21,8 @@ router.get('/:UUID', function(req, res){
 					checkAudio(req.params.UUID)
 						.then(weHaveThatAudioFile => {
 							res.json({
-								haveFile : weHaveThatAudioFile
+								haveFile : weHaveThatAudioFile,
+								url : generateS3URL(req.params.UUID)
 							});
 							uuidCache.set(req.params.UUID, weHaveThatAudioFile);
 						})
