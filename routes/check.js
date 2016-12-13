@@ -16,7 +16,7 @@ router.get('/:UUID', function(req, res){
 			.then(cachedValue => {
 
 				if(cachedValue === undefined){
-					console.log("Value not in cache. Checking...");
+					debug("Value not in cache. Checking...");
 					checkAudio(req.params.UUID)
 						.then(weHaveThatAudioFile => {
 							res.json({
@@ -25,14 +25,14 @@ router.get('/:UUID', function(req, res){
 							uuidCache.set(req.params.UUID, weHaveThatAudioFile);
 						})
 						.catch(err => {
-							console.log(err);
+							debug(err);
 							res.status(500);
 							res.end();
 						})
 					;
 
 				} else {
-					console.log('Value is in cache. Is:', cachedValue);
+					debug('Value is in cache. Is:', cachedValue);
 					res.json({
 						haveFile : cachedValue
 					});

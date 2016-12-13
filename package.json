@@ -17,5 +17,8 @@
     "lru-cache": "^4.0.1",
     "morgan": "~1.7.0",
     "serve-favicon": "~2.3.0"
+  },
+  "engines" : {
+    "node" : ">= 6.6.0 < 7.0.0"
   }
 }
