@@ -3,7 +3,7 @@ const LRU = require('lru-cache');
 const cache = LRU({
 	max: 500,
 	length: function (n, key) { return n * 2 + key.length },
-	maxAge: (1000 * 60 * 60) * 1
+	maxAge: (1000 * 60 * 60) * 0.5
 });
 
 function checkForUUIDInCache(UUID){

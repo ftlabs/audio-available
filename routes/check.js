@@ -36,7 +36,8 @@ router.get('/:UUID', function(req, res){
 				} else {
 					debug('Value is in cache. Is:', cachedValue);
 					res.json({
-						haveFile : cachedValue
+						haveFile : cachedValue,
+						url : generateS3URL(req.params.UUID)
 					});
 
 				}
