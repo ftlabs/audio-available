@@ -19,12 +19,22 @@ router.get('/:UUID', function(req, res){
 				if(cachedValue === undefined){
 					debug("Value not in cache. Checking...");
 					checkAudio(req.params.UUID)
-						.then(weHaveThatAudioFile => {
-							res.json({
-								haveFile : weHaveThatAudioFile,
-								url : generateS3URL(req.params.UUID)
-							});
-							uuidCache.set(req.params.UUID, weHaveThatAudioFile);
+						.then(data => {
+
+							const returnValues = {};
+
+							if(data === false){
+								returnValues.haveFile = false;
+							} else {
+								returnValues.haveFile = true;
+								returnValues.url = generateS3URL(req.params.UUID);
+								returnValues.size = data.ContentLength;
+							}
+
+							res.json(returnValues);
+
+							uuidCache.set(req.params.UUID, returnValues);
+
 						})
 						.catch(err => {
 							debug(err);
@@ -35,10 +45,7 @@ router.get('/:UUID', function(req, res){
 
 				} else {
 					debug('Value is in cache. Is:', cachedValue);
-					res.json({
-						haveFile : cachedValue,
-						url : generateS3URL(req.params.UUID)
-					});
+					res.json(cachedValue);
 
 				}
 
