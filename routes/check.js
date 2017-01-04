@@ -6,6 +6,7 @@ const checkAudio = require('../bin/lib/check-audio');
 const checkUUID = require('../bin/lib/check-uuid');
 const uuidCache = require('../bin/lib/uuid-cache');
 const generateS3URL = require('../bin/lib/get-s3-public-url');
+const generateHumanTime = require('../bin/lib/generate-human-time');
 
 router.get('/:UUID', function(req, res){
 
@@ -20,7 +21,7 @@ router.get('/:UUID', function(req, res){
 					debug("Value not in cache. Checking...");
 					checkAudio(req.params.UUID)
 						.then(data => {
-
+							debug(data);
 							const returnValues = {};
 
 							if(data === false){
@@ -29,6 +30,11 @@ router.get('/:UUID', function(req, res){
 								returnValues.haveFile = true;
 								returnValues.url = generateS3URL(req.params.UUID);
 								returnValues.size = data.ContentLength;
+								returnValues.duration = {
+									milliseconds : data.duration * 1000,
+									seconds : data.duration,
+									humantime : generateHumanTime(data.duration * 1000)
+								}
 							}
 
 							res.json(returnValues);
