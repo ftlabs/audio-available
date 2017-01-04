@@ -1,6 +1,7 @@
 const debug = require('debug')('bin:lib:check-audio');
 const AWS = require('aws-sdk');
 const S3 = new AWS.S3();
+const database = require('./database');
 
 module.exports = function(UUID){
 
@@ -16,7 +17,19 @@ module.exports = function(UUID){
 			} else if(err){
 				reject(err);
 			} else if(!err) {
-				resolve(data);
+
+				database.read({ uuid : UUID }, process.env.AWS_AUDIO_METADATA_TABLE)
+					.then(metadata => {
+						debug(metadata.Item);
+						data.duration = metadata.Item.duration;
+						resolve(data);
+					})
+					.catch(err => {
+						debug(err);
+						resolve(data);
+					})
+				;
+
 			}
 
 		});
