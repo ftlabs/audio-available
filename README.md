@@ -64,3 +64,29 @@ The `UUID` must be a valid v4 UUID.
 - **milliseconds**: [NUMBER] *length of audio in milliseconds*
 - **seconds**: [STRING] *length of audio in seconds*
 - **humantime**: [STRING] *human readable length of audio. Will be hh:mm:ss if longer than 1 hour, otherwise mm:ss.*
+
+## Running
+
+To build and run this service for yourself, a number of environment variables need to be set. These can be set by including a `.env` file in the root of the project directory.
+
+### Required
+
+**AWS_ACCESS_KEY_ID**
+- The access key ID for the user with Amazon DynamoDB/S3 read/write permissions
+
+**AWS_SECRET_ACCESS_KEY**
+- The corresponding secret access key for the `AWS_ACCESS_KEY_ID`
+
+**AWS_AUDIO_BUCKET**
+- The name of the S3 bucket that the audio versions of FT articles can be found in.
+
+**AWS_AUDIO_METADATA_TABLE**
+- The name of the DynamoDB table that contains the metadata for the audio versions of FT articles.
+
+### Optional
+
+**SL_MEDIA_FORMAT**
+- The expected media format for the audio files. Defaults to `.mp3` if not included
+
+**AWS_REGION**
+- The region code for the AWS services being utilised. Defaults to `us-west-2` if not included.
