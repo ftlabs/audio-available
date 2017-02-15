@@ -10,7 +10,7 @@ const generateHumanTime = require('../bin/lib/generate-human-time');
 
 const holdingTime = process.env.HOLDING_TIME || 2000;
 
-function getInfoForUUID(UUID){
+function getInfoForUUID(UUID, attempt = 0){
 
 	return uuidCache.check(UUID)
 		.then(cachedValue => {
@@ -46,13 +46,17 @@ function getInfoForUUID(UUID){
 			} else if(cachedValue === 'checking'){
 
 				debug('Check in progress holding request...');
-				return new Promise( resolve => {
+				return new Promise( (resolve, reject) => {
 						setTimeout(function(){
-							resolve();
+							if(attempt < 5){
+								resolve();
+							} else {
+								reject();
+							}
 						}, holdingTime);
 					})
 					.then(function(){
-						return getInfoForUUID(UUID);
+						return getInfoForUUID(UUID, attempt + 1);
 					})
 				;
 
