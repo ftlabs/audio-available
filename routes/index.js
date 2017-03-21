@@ -22,10 +22,13 @@ router.get('/__health', function(req, res){
 	};
 
 	healthchecks()
-		.then(function(){
+		.then(checks => {
+			healthDescription.checks = checks;
 			res.json(healthDescription);
 		})
-		.catch(err => {
+		.catch(checks => {
+			healthDescription.checks = checks;
+			
 			res.status(500);
 			res.json(healthDescription);
 		})
