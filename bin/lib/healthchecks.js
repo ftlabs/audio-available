@@ -33,6 +33,8 @@ function readFromDatabase(){
 			debug(err);
 			thisCheck.ok = false;
 			thisCheck.error = err;
+			delete thisCheck.error.message;
+
 			return thisCheck;
 		})
 	;
