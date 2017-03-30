@@ -22,6 +22,13 @@ module.exports = function(UUID){
 					.then(metadata => {
 						debug(metadata.Item);
 						data.duration = metadata.Item.duration;
+
+						if(metadata.Item.enabled === undefined){
+							data.enabled = true;
+						} else{
+							data.enabled = metadata.Item.enabled;
+						}
+
 						resolve(data);
 					})
 					.catch(err => {

@@ -25,6 +25,8 @@ function getInfoForUUID(UUID, attempt = 0){
 
 						if(data === false){
 							returnValues.haveFile = false;
+						} else if(data.enabled === false){
+							returnValues.haveFile = false;
 						} else {
 							returnValues.haveFile = true;
 							returnValues.url = generateS3URL(UUID);

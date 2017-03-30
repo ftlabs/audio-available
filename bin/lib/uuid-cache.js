@@ -1,3 +1,4 @@
+const debug = require('debug')('bin:lib:uuid-cache');
 const LRU = require('lru-cache');
 
 const cache = LRU({
@@ -7,6 +8,8 @@ const cache = LRU({
 });
 
 function checkForUUIDInCache(UUID){
+
+	debug(`Checking cache for: ${UUID}`);
 
 	return new Promise((resolve, reject) => {
 
@@ -21,12 +24,17 @@ function checkForUUIDInCache(UUID){
 };
 
 function addUUIDIntoCache(UUID, state = true){
-
+	debug(`Adding item into cache for: ${UUID}`);
 	cache.set(UUID, state);
+}
 
+function removeItemFromCache(key = ''){
+	debug(`Deleting item from cache for: ${key}`);
+	cache.del(key);
 }
 
 module.exports = {
 	check : checkForUUIDInCache,
-	set : addUUIDIntoCache
+	set : addUUIDIntoCache,
+	delete : removeItemFromCache
 };
