@@ -31,11 +31,13 @@ function getInfoForUUID(UUID, attempt = 0){
 							returnValues.haveFile = true;
 							returnValues.url = generateS3URL(UUID);
 							returnValues.size = data.ContentLength;
+							returnValues.provider = data.dbInfo.provider;
+							returnValues.ishuman = data.dbInfo['is-human'];
 							returnValues.duration = {
 								milliseconds : data.duration * 1000,
 								seconds : data.duration,
 								humantime : generateHumanTime(data.duration * 1000)
-							}
+							};
 						}
 
 						uuidCache.set(UUID, returnValues);

@@ -25,6 +25,7 @@ module.exports = function(UUID){
 
 							debug(metadata.Item);
 							data.duration = metadata.Item.duration;
+							data.dbInfo = metadata.Item;
 
 							if(metadata.Item.enabled === undefined){
 								data.enabled = true;
