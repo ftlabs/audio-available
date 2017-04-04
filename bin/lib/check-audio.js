@@ -20,16 +20,24 @@ module.exports = function(UUID){
 
 				database.read({ uuid : UUID }, process.env.AWS_AUDIO_METADATA_TABLE)
 					.then(metadata => {
-						debug(metadata.Item);
-						data.duration = metadata.Item.duration;
 
-						if(metadata.Item.enabled === undefined){
-							data.enabled = true;
-						} else{
-							data.enabled = metadata.Item.enabled;
+						if(Object.keys(metadata.Item).length > 2){
+
+							debug(metadata.Item);
+							data.duration = metadata.Item.duration;
+
+							if(metadata.Item.enabled === undefined){
+								data.enabled = true;
+							} else{
+								data.enabled = metadata.Item.enabled;
+							}
+
+							resolve(data);
+
+						} else {
+							resolve(false);
 						}
 
-						resolve(data);
 					})
 					.catch(err => {
 						debug(err);
