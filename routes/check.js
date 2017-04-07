@@ -32,6 +32,7 @@ function getInfoForUUID(UUID, attempt = 0){
 							returnValues.url = generateS3URL(UUID);
 							returnValues.size = data.ContentLength;
 							returnValues.provider = data.dbInfo.provider;
+							returnValues['provider_name'] = data.dbInfo['provider_name'];
 							returnValues.ishuman = data.dbInfo['is-human'];
 							returnValues.duration = {
 								milliseconds : data.duration * 1000,
