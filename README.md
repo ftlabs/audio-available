@@ -13,6 +13,8 @@ At the moment, audio content doesn't have a proper, permanent place to live at t
 
 ## Usage
 
+### Checking for an audio article
+
 To check for the existence of an audio file for an article, you can hit the `/check/:UUID`. 
 
 You can pass any FT content UUID to check the availability, location and basic information of an audio file.
@@ -21,7 +23,7 @@ The `UUID` must be a valid v4 UUID.
 
 **Example**
 
-`https://ftlabs-audio-available.herokuapp.com/check/0e69c5a4-a4cd-11e6-8898-79a99e2a4de6`
+`https://audio-available.ft.com/check/0e69c5a4-a4cd-11e6-8898-79a99e2a4de6`
 
 **Response**
 
@@ -31,25 +33,53 @@ The `UUID` must be a valid v4 UUID.
 // If file exists...
 
 {
-	haveFile: true,
-	url: "[ABSOLUTE PATH TO AUDIO FILE]",
-	size: "2744769",
-	duration: {
-		milliseconds: 343040,
-		seconds: "343.04",
-		humantime: "05:43"
+	"haveFile": true,
+	"url": "[ABSOLUTE PATH TO AUDIO FILE]",
+	provider: "ftlabs-tts",
+	provider_name: "FT Labs text-to-speech service",
+	ishuman : "true"
+	"size": "2744769",
+	"duration": {
+		"milliseconds": 343040,
+		"seconds": "343.04",
+		"humantime": "05:43"
 	}
 }
 
 // If file does not exist...
 
 {
-	haveFile: false
+	"haveFile": false
 }
 
 ```
 
-### Response properties
+### Triggering a purge of the audio-available cache
+
+Once a UUID has been checked for the availability of an audio file, that result is cached for 30 minutes. If the availability of the file has changed in those 30 minutes, this cache can be purged so that a new check for the actual availability of a file can be made.
+
+To trigger a cache purge of a specific item, you can make a HTTP request to `/purge/:UUID`. NB: you can only trigger a cache purge if you pass a valid purge token as the query parameter `purgeToken`
+
+**Example**
+
+`https://audio-available.ft.com/purge/0e69c5a4-a4cd-11e6-8898-79a99e2a4de6?purgeToken=[YOUR_CACHE_PURGE_TOKEN]`
+
+**Response**
+
+*The HTTP status code for a successful purge will be `200`, even if a file does not exist. A status code of `401` will be returned if an invalid `queryToken` is passed.*
+
+```
+
+// If successful...
+
+{
+	status : 'ok',
+	message : `Item 0e69c5a4-a4cd-11e6-8898-79a99e2a4de6 purged from cache.`
+}
+
+```
+
+### /check response properties
 
 **haveFile**: [BOOLEAN] true *or* false
 
@@ -58,6 +88,12 @@ The `UUID` must be a valid v4 UUID.
 **url**: [STRING] 
 
 **size**: [NUMBER] *size of available audio file in bytes*
+
+**provider** [STRING] *The short name of any audio provider as determined by the config in the [Absorber](https://github.com/ftlabs/Absorber#audio_rss_endpoints) service*
+
+**provider_name** [STRING] *The long version of the provider short name. This value is intended to be displayed to a user as audio is being played.*
+
+**ishuman** [BOOLEAN] *Some audio files will be of generated voices. This property indicates whether or not the file has been recorded by a person or not*
 
 **duration**: [OBJECT]
 
@@ -83,6 +119,9 @@ To build and run this service for yourself, a number of environment variables ne
 **AWS_AUDIO_METADATA_TABLE**
 - The name of the DynamoDB table that contains the metadata for the audio versions of FT articles.
 
+**CACHE_PURGE_KEY**
+- The value that the `purgeToken` needs to be to trigger a cache purge at the `/purge` endpoint.
+
 ### Optional
 
 **SL_MEDIA_FORMAT**
@@ -90,3 +129,10 @@ To build and run this service for yourself, a number of environment variables ne
 
 **AWS_REGION**
 - The region code for the AWS services being utilised. Defaults to `us-west-2` if not included.
+
+**HOLDING_TIME**
+- How long a request for an audio file lookup should be held before returning an error/result. A request will only be held if the first check for an audio file is underway. 
+
+## Additional info
+
+This service has `/__gtg` and `/__health` endpoints.

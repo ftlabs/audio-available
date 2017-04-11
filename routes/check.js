@@ -33,7 +33,7 @@ function getInfoForUUID(UUID, attempt = 0){
 							returnValues.size = data.ContentLength;
 							returnValues.provider = data.dbInfo.provider;
 							returnValues['provider_name'] = data.dbInfo['provider_name'];
-							returnValues.ishuman = data.dbInfo['is-human'];
+							returnValues.ishuman = data.dbInfo['is-human'] === 'true';
 							returnValues.duration = {
 								milliseconds : data.duration * 1000,
 								seconds : data.duration,
