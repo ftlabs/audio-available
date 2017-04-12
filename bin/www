@@ -3,7 +3,7 @@
 /**
  * Module dependencies.
  */
-
+global.Promise = require('bluebird');
 const dotenv = require('dotenv').config();
 const app = require('../app');
 const debug = require('debug')('audio-available:server');
