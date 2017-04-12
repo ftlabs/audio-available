@@ -3,7 +3,6 @@ const express = require('express');
 const router = express.Router();
 
 const checkAudio = require('../bin/lib/check-audio');
-const checkUUID = require('../bin/lib/check-uuid');
 const uuidCache = require('../bin/lib/uuid-cache');
 const generateS3URL = require('../bin/lib/get-s3-public-url');
 const generateHumanTime = require('../bin/lib/generate-human-time');
@@ -75,27 +74,18 @@ function getInfoForUUID(UUID, attempt = 0){
 
 }
 
-router.get('/:UUID', function(req, res){
-
-	const isValidUUID = checkUUID(req.params.UUID);
-
-	if(isValidUUID){
+router.get(`/:UUID([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})`, (req, res) => {
 		
-		getInfoForUUID(req.params.UUID)
-			.then(data => {
-				res.json(data);
-			})
-			.catch(err => {
-				debug(err);
-				res.status(500);
-				res.end();
-			})
-		;
-
-	} else {
-		res.status(420);
-		res.end();
-	}
+	getInfoForUUID(req.params.UUID)
+		.then(data => {
+			res.json(data);
+		})
+		.catch(err => {
+			debug(err);
+			res.status(500);
+			res.end();
+		})
+	;
 
 });
 
