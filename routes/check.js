@@ -3,74 +3,40 @@ const express = require('express');
 const router = express.Router();
 
 const checkAudio = require('../bin/lib/check-audio');
-const uuidCache = require('../bin/lib/uuid-cache');
 const generateS3URL = require('../bin/lib/get-s3-public-url');
 const generateHumanTime = require('../bin/lib/generate-human-time');
 
-const holdingTime = process.env.HOLDING_TIME || 2000;
+function getInfoForUUID(UUID){
 
-function getInfoForUUID(UUID, attempt = 0){
+	return checkAudio(UUID)
+		.then(data => {
+			debug(data);
+			const returnValues = {};
 
-	return uuidCache.check(UUID)
-		.then(cachedValue => {
-			debug(cachedValue);
-			if(cachedValue === undefined){
-				debug("Value not in cache. Checking...");
-				uuidCache.set(UUID, 'checking');
-				return checkAudio(UUID)
-					.then(data => {
-						debug(data);
-						const returnValues = {};
-
-						if(data === false){
-							returnValues.haveFile = false;
-						} else if(data.enabled === false){
-							returnValues.haveFile = false;
-						} else {
-							returnValues.haveFile = true;
-							returnValues.url = generateS3URL(UUID);
-							returnValues.size = data.ContentLength;
-							returnValues.provider = data.dbInfo.provider;
-							returnValues['provider_name'] = data.dbInfo['provider_name'];
-							returnValues.ishuman = data.dbInfo['is-human'] === 'true';
-							returnValues.duration = {
-								milliseconds : data.duration * 1000,
-								seconds : data.duration,
-								humantime : generateHumanTime(data.duration * 1000)
-							};
-						}
-
-						uuidCache.set(UUID, returnValues);
-						return returnValues
-
-					})
-					
-				;
-
-			} else if(cachedValue === 'checking'){
-
-				debug('Check in progress holding request...');
-				return new Promise( (resolve, reject) => {
-						setTimeout(function(){
-							if(attempt < 5){
-								resolve();
-							} else {
-								reject();
-							}
-						}, holdingTime);
-					})
-					.then(function(){
-						return getInfoForUUID(UUID, attempt + 1);
-					})
-				;
-
+			if(data === false){
+				returnValues.haveFile = false;
+			} else if(data.enabled === false){
+				returnValues.haveFile = false;
 			} else {
-				debug('Value is in cache. Is:', cachedValue);
-				return cachedValue
+				returnValues.haveFile = true;
+				returnValues.url = generateS3URL(UUID);
+				returnValues.size = data.ContentLength;
+				returnValues.provider = data.dbInfo.provider;
+				returnValues['provider_name'] = data.dbInfo['provider_name'];
+				returnValues.ishuman = data.dbInfo['is-human'] === 'true';
+				returnValues.duration = {
+					milliseconds : data.duration * 1000,
+					seconds : data.duration,
+					humantime : generateHumanTime(data.duration * 1000)
+				};
 			}
 
+			return returnValues
+
 		})
+		
 	;
+
 
 }
 
