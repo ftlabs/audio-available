@@ -37,4 +37,15 @@ router.get('/__health', function(req, res){
 
 });
 
+const uuidRegex = '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}';
+router.get(`^/purge/:UUID(${uuidRegex})$`, (req, res) => {
+
+	res.json({
+		status : 'ok',
+		message : `Item ${req.params.UUID} purged from cache.`
+	});
+
+});
+
+
 module.exports = router;
