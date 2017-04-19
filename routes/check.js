@@ -46,7 +46,6 @@ router.get(`/:UUID([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})
 		
 	getInfoForUUID(req.params.UUID)
 		.then(data => {
-			res.setHeader('Cache-Control', `public, max-age=${MAX_CHECK_AGE}`);
 			res.json(data);
 		})
 		.catch(err => {
