@@ -56,27 +56,16 @@ The `UUID` must be a valid v4 UUID.
 
 ### Triggering a purge of the audio-available cache
 
-Once a UUID has been checked for the availability of an audio file, that result is cached for 30 minutes. If the availability of the file has changed in those 30 minutes, this cache can be purged so that a new check for the actual availability of a file can be made.
+Caching has been moved from the app to [Fastly](https://docs.fastly.com/api/purge#purge_3aa1d66ee81dbfed0b03deed0fa16a9a). Every audio service (absorber/management et al) that can manipulate the S3 audio buckets or DynamoDB tables should trigger a cache purge to the audio available service. This can be done by making a `PURGE` request to the URL that is to be purged.
 
-To trigger a cache purge of a specific item, you can make a HTTP request to `/purge/:UUID`. NB: you can only trigger a cache purge if you pass a valid purge token as the query parameter `purgeToken`
-
-**Example**
-
-`https://audio-available.ft.com/purge/0e69c5a4-a4cd-11e6-8898-79a99e2a4de6?purgeToken=[YOUR_CACHE_PURGE_TOKEN]`
+`curl -X PURGE https://audio-available.ft.com/check/2cc51074-2c10-11e7-9ec8-168383da43b7`
 
 **Response**
-
-*The HTTP status code for a successful purge will be `200`, even if a file does not exist. A status code of `401` will be returned if an invalid `queryToken` is passed.*
-
 ```
-
-// If successful...
-
 {
-	status : 'ok',
-	message : `Item 0e69c5a4-a4cd-11e6-8898-79a99e2a4de6 purged from cache.`
+  "status":"ok",
+  "id":"108-1391560174-974124"
 }
-
 ```
 
 ### /check response properties
